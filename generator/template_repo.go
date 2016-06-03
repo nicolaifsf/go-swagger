@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,7 +24,6 @@ var protectedTemplates = map[string]bool{
 	"validationCustomformat":         true,
 	"tuplefield":                     true,
 	"header":                         true,
-	"withBaseTypeBody":               true,
 	"primitivefieldvalidator":        true,
 	"mapvalidator":                   true,
 	"propertyValidationDocString":    true,
@@ -49,6 +49,9 @@ var protectedTemplates = map[string]bool{
 	"schemaType":                     true,
 	"subTypeBody":                    true,
 	"schema":                         true,
+	"schemaSerializer":               true,
+	"schemaSerializer2":              true,
+	"schemaserializer":               true,
 	"additionalPropertiesSerializer": true,
 	"serverDoc":                      true,
 	"structfield":                    true,
@@ -114,6 +117,95 @@ var FuncMap template.FuncMap = map[string]interface{}{
 		}
 		return false
 	},
+	"sumInt": func(values ...int) int {
+		var res int
+		for _, v := range values {
+			res += v
+		}
+		return res
+	},
+	"noProperties": noProperties,
+}
+
+func noProperties(value interface{}) int {
+	if swag.IsZero(value) {
+		return 0
+	}
+
+	var sch *GenSchema
+	switch tpe := value.(type) {
+	case GenSchema:
+		sch = &tpe
+	case *GenSchema:
+		sch = tpe
+	case GenDefinition:
+		sch = &tpe.GenSchema
+	case *GenDefinition:
+		sch = &tpe.GenSchema
+	case []GenSchema:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case []*GenSchema:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case map[string]GenSchema:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case map[string]*GenSchema:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case []GenDefinition:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case []*GenDefinition:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case map[string]GenDefinition:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	case map[string]*GenDefinition:
+		var i int
+		for _, v := range tpe {
+			i += noProperties(v)
+		}
+		return i
+	default:
+		log.Printf("unknown schema type (%T)", tpe)
+	}
+	if sch == nil {
+		return 0
+	}
+
+	result := len(sch.Properties)
+	result += noProperties(sch.AllOf)
+	if sch.HasAdditionalProperties {
+		result++
+	}
+	if sch.HasAdditionalItems {
+		result++
+	}
+	return result
 }
 
 // NewRepository creates a new template repository with the provided functions defined
@@ -125,7 +217,6 @@ func NewRepository(funcs template.FuncMap) *Repository {
 	}
 
 	if repo.funcs == nil {
-
 		repo.funcs = make(template.FuncMap)
 	}
 
@@ -143,8 +234,11 @@ type Repository struct {
 func (t *Repository) LoadDefaults() {
 
 	for name, asset := range assets {
+		if Debug {
+			log.Printf("adding template %q", name)
+		}
 		if err := t.addFile(name, string(asset), true); err != nil {
-			log.Fatal(err)
+			log.Fatalf("failed to load %q: %v", name, err)
 		}
 	}
 }
@@ -157,9 +251,12 @@ func (t *Repository) LoadDir(templatePath string) error {
 		if strings.HasSuffix(path, ".gotmpl") {
 			assetName := strings.TrimPrefix(path, templatePath)
 			if data, err := ioutil.ReadFile(path); err == nil {
-				if err := t.AddFile(assetName, string(data)); err != nil {
-					log.Fatal(err)
+				if err2 := t.AddFile(assetName, string(data)); err2 != nil {
+					log.Fatalf("add file asset %q: %v", path, err)
 				}
+			}
+			if Debug {
+				log.Printf("read file %q: %v", path, err)
 			}
 		}
 		if err != nil {
