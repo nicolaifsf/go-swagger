@@ -288,7 +288,6 @@ func (t *typeResolver) resolveArray(schema *spec.Schema, isAnonymous, isRequired
 	result.SwaggerType = array
 	result.SwaggerFormat = ""
 	t.inferAliasing(&result, schema, isAnonymous, isRequired)
-
 	return
 }
 
@@ -546,17 +545,21 @@ type resolvedType struct {
 }
 
 func (rt *resolvedType) Zero() string {
-	if zr, ok := zeroes[rt.GoType]; ok {
+	tpe := rt.GoType
+	if rt.IsAliased {
+		tpe = rt.AliasedType
+	}
+	if zr, ok := zeroes[tpe]; ok {
 		return zr
 	}
 	if rt.IsMap || rt.IsArray {
-		return "make(" + rt.GoType + ")"
+		return "make(" + tpe + ")"
 	}
 	if rt.IsTuple || rt.IsComplexObject {
 		if rt.IsNullable {
-			return "new(" + rt.GoType + ")"
+			return "new(" + tpe + ")"
 		}
-		return rt.GoType + "{}"
+		return tpe + "{}"
 	}
 	if rt.IsInterface {
 		return "nil"

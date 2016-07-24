@@ -959,7 +959,11 @@ func (sg *schemaGenContext) buildArray() error {
 	sg.GenSchema.IsBaseType = elProp.GenSchema.IsBaseType
 	sg.GenSchema.ItemsEnum = elProp.GenSchema.Enum
 	elProp.GenSchema.Suffix = "Items"
-	sg.GenSchema.GoType = "[]" + elProp.GenSchema.GoType
+	if sg.Named {
+		sg.GenSchema.AliasedType = "[]" + elProp.GenSchema.GoType
+	} else {
+		sg.GenSchema.GoType = "[]" + elProp.GenSchema.GoType
+	}
 
 	// TODO: this is probably not right. Should just respect what type resolvers said
 	nn := elProp.GenSchema.IsNullable
@@ -974,9 +978,6 @@ func (sg *schemaGenContext) buildArray() error {
 	hv, _ := hasValidations(sg.Schema.Items.Schema, false)
 	schemaCopy.HasValidations = elProp.GenSchema.IsNullable || hv
 	sg.GenSchema.Items = &schemaCopy
-	if sg.Named {
-		sg.GenSchema.AliasedType = sg.GenSchema.GoType
-	}
 	return nil
 }
 
@@ -1246,7 +1247,7 @@ func (sg *schemaGenContext) makeGenSchema() error {
 	sg.GenSchema.resolvedType = tpe
 
 	if Debug {
-		log.Println("gschema nullable", sg.GenSchema.IsNullable)
+		log.Println("gschema nullable", sg.GenSchema.IsNullable, "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
 	}
 	if err := sg.buildAdditionalProperties(); err != nil {
 		return err
@@ -1271,26 +1272,41 @@ func (sg *schemaGenContext) makeGenSchema() error {
 	sg.GenSchema.JSONOut = sg.jsonOut()
 
 	if Debug {
-		log.Println("gschema nnullable", sg.GenSchema.IsNullable)
+		log.Println("tgschema nnullable", sg.GenSchema.IsNullable, "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
 	}
 	if err := sg.buildProperties(); err != nil {
 		return err
+	}
+	if Debug {
+		log.Println("after properties", "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
 	}
 
 	if err := sg.buildXMLName(); err != nil {
 		return err
 	}
+	if Debug {
+		log.Println("after xml name", "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
+	}
 
 	if err := sg.buildAdditionalItems(); err != nil {
 		return err
+	}
+	if Debug {
+		log.Println("after additional items", "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
 	}
 
 	if err := sg.buildItems(); err != nil {
 		return err
 	}
+	if Debug {
+		log.Println("after items", "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
+	}
 
 	if err := sg.buildAliased(); err != nil {
 		return err
+	}
+	if Debug {
+		log.Println("after aliased", "goType", sg.GenSchema.GoType, "aliased", sg.GenSchema.AliasedType)
 	}
 	sg.GenSchema.PropLen = noProperties(sg.GenSchema)
 	if Debug {

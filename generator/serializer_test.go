@@ -14,7 +14,7 @@ func TestSerializer_Methods(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Category"]
-		genModel, err := makeGenDefinition("Category", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Category", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			buf := bytes.NewBuffer(nil)
 			err := modelTemplate.Execute(buf, genModel)
@@ -49,7 +49,7 @@ func TestSerializer_Category(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Category"]
-		genModel, err := makeGenDefinition("Category", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Category", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "Category", genModel.Name)
@@ -116,7 +116,7 @@ func TestSerializer_Categories(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Categories"]
-		genModel, err := makeGenDefinition("Categories", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Categories", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsArray)
 			assert.Equal(t, "Categories", genModel.Name)
@@ -150,7 +150,7 @@ func TestSerializer_Product(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Product"]
-		genModel, err := makeGenDefinition("Product", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Product", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "Product", genModel.Name)
@@ -215,7 +215,7 @@ func TestSerializer_ProductLine(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["ProductLine"]
-		genModel, err := makeGenDefinition("ProductLine", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("ProductLine", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "ProductLine", genModel.Name)
@@ -280,7 +280,7 @@ func TestSerializer_Scores(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Scores"]
-		genModel, err := makeGenDefinition("Scores", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Scores", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsArray)
 			assert.Equal(t, "Scores", genModel.Name)
@@ -318,7 +318,7 @@ func TestSerializer_JaggedScores(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["JaggedScores"]
-		genModel, err := makeGenDefinition("JaggedScores", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("JaggedScores", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsArray)
 			assert.Equal(t, "JaggedScores", genModel.Name)
@@ -364,7 +364,7 @@ func TestSerializer_Notables(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Notables"]
-		genModel, err := makeGenDefinition("Notables", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Notables", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsArray)
 			assert.False(t, genModel.IsAnonymous)
@@ -400,7 +400,7 @@ func TestSerializer_Notablix(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Notablix"]
-		genModel, err := makeGenDefinition("Notablix", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Notablix", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsArray)
 			assert.False(t, genModel.IsAnonymous)
@@ -445,7 +445,7 @@ func TestSerializer_WithComplexItems(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["WithComplexItems"]
-		genModel, err := makeGenDefinition("WithComplexItems", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("WithComplexItems", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "WithComplexItems", genModel.Name)
@@ -496,7 +496,7 @@ func TestSerializer_WithItemsAndAdditional(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["WithItemsAndAdditional"]
-		genModel, err := makeGenDefinition("WithItemsAndAdditional", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("WithItemsAndAdditional", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "WithItemsAndAdditional", genModel.Name)
@@ -550,7 +550,7 @@ func TestSerializer_WithItemsAndAdditional2(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["WithItemsAndAdditional2"]
-		genModel, err := makeGenDefinition("WithItemsAndAdditional2", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("WithItemsAndAdditional2", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "WithItemsAndAdditional2", genModel.Name)
@@ -600,7 +600,7 @@ func TestSerializer_WithComplexAdditional(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["WithComplexAdditional"]
-		genModel, err := makeGenDefinition("WithComplexAdditional", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("WithComplexAdditional", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsComplexObject)
 			assert.Equal(t, "WithComplexAdditional", genModel.Name)
@@ -656,7 +656,7 @@ func TestSerializer_Age(t *testing.T) {
 	if assert.NoError(t, err) {
 		definitions := specDoc.Spec().Definitions
 		schema := definitions["Age"]
-		genModel, err := makeGenDefinition("Age", "models", schema, specDoc, true)
+		genModel, err := makeGenDefinition("Age", "models", schema, specDoc, true, true)
 		if assert.NoError(t, err) {
 			assert.True(t, genModel.IsPrimitive)
 			assert.True(t, genModel.IsAliased)
@@ -677,6 +677,291 @@ func TestSerializer_Age(t *testing.T) {
 					assertInCode(t, "out.Int32(m)", res)
 					assertInCode(t, "*m = in.Int32()", res)
 					// assertInCode(t, "", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_Flag(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["flag"]
+		genModel, err := makeGenDefinition("flag", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsPrimitive)
+			assert.True(t, genModel.IsAliased)
+			assert.Equal(t, "flag", genModel.Name)
+			assert.Equal(t, "Flag", genModel.GoType)
+			assert.Equal(t, "string", genModel.AliasedType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("flag.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type Flag string", res)
+					assertInCode(t, "func (m Flag) MarshalJSON() ([]byte, error) {", res)
+					assertInCode(t, "func (m *Flag) MarshalEasyJSON(out *jwriter.Writer) {", res)
+					assertInCode(t, "out.String(m)", res)
+					assertInCode(t, "*m = in.String()", res)
+					// assertInCode(t, "", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_FlagsList(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["flags_list"]
+		genModel, err := makeGenDefinition("flags_list", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsArray)
+			assert.True(t, genModel.IsAliased)
+			assert.Equal(t, "flags_list", genModel.Name)
+			assert.Equal(t, "FlagsList", genModel.GoType)
+			assert.Equal(t, "[]Flag", genModel.AliasedType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("flags_list.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type FlagsList []Flag", res)
+					assertInCode(t, "func (m FlagsList) MarshalJSON() ([]byte, error) {", res)
+					assertInCode(t, "func (m *FlagsList) MarshalEasyJSON(out *jwriter.Writer) {", res)
+					assertInCode(t, "out.RawByte('[')", res)
+					assertInCode(t, "out.RawByte(',')", res)
+					assertInCode(t, "out.Raw(swag.WriteJSON(m[i]))", res)
+					assertInCode(t, "out.RawByte(']')", res)
+					assertInCode(t, "iReadFn := func(in *jlexer.Lexer) (Flag, error)", res)
+					assertInCode(t, "var flagsListValue Flag", res)
+					assertInCode(t, "data := in.Raw(); in.Ok()", res)
+					assertInCode(t, "err := swag.ReadJSON(data, &flagsListValue)", res)
+					assertInCode(t, "var result []Flag", res)
+					assertInCode(t, "in.Delim('[')", res)
+					assertInCode(t, "result = make([]Flag, 0, 64)", res)
+					assertInCode(t, "flagsListValue, err := iReadFn(in)", res)
+					assertInCode(t, "in.Delim(']')", res)
+					// assertInCode(t, "", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_ImageTar(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["ImageTar"]
+		genModel, err := makeGenDefinition("ImageTar", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsStream)
+			assert.True(t, genModel.IsAliased)
+			assert.Equal(t, "ImageTar", genModel.Name)
+			assert.Equal(t, "ImageTar", genModel.GoType)
+			assert.Equal(t, "io.ReadCloser", genModel.AliasedType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("image_tar.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type ImageTar io.ReadCloser", res)
+					assertNotInCode(t, "func (m ImageTar) MarshalJSON() ([]byte, error)", res)
+					assertNotInCode(t, "func (m *ImageTar) UnmarshalJSON(data []byte) error", res)
+					assertNotInCode(t, "func (m *ImageTar) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertNotInCode(t, "func (m *ImageTar) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertNotInCode(t, "func (m *ImageTar) Validate(formats strfmt.Registry)", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_Tag(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["Tag"]
+		genModel, err := makeGenDefinition("Tag", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsComplexObject)
+			assert.False(t, genModel.IsAliased)
+			assert.Equal(t, "Tag", genModel.Name)
+			assert.Equal(t, "Tag", genModel.GoType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("image_tar.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type Tag struct", res)
+					assertInCode(t, "func (m Tag) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m *Tag) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m *Tag) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *Tag) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "func (m *Tag) FlagNameSet()", res)
+					assertInCode(t, "func (m *Tag) FlagNameUnset()", res)
+					assertInCode(t, "func (m *Tag) FlagNameNil()", res)
+					assertInCode(t, "func (m *Tag) FlagNameZero()", res)
+					assertInCode(t, "func (m *Tag) IsNameNil() bool", res)
+					assertInCode(t, "func (m *Tag) IsNameSet() bool", res)
+					assertInCode(t, "func (m *Tag) HasNameValue() bool", res)
+					assertInCode(t, "func (m *Tag) SetName(value *string)", res)
+					assertInCode(t, "func (m *Tag) ClearName()", res)
+					assertInCode(t, "func (m *Tag) GetName() (value *string, null bool, haskey bool)", res)
+					assertInCode(t, "func (m *Tag) GetNamePtr() *string", res)
+					assertInCode(t, "out.RawString(\"\\\"name\\\":\")", res)
+					assertInCode(t, "err := m.nameIWriteJSON(out)", res)
+					assertInCode(t, "nameValue, err := m.nameIReadJSON(in)", res)
+					assertInCode(t, "out.String(m.Name)", res)
+					assertInCode(t, "return &in.String(), nil", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_Stats(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["Stats"]
+		genModel, err := makeGenDefinition("Stats", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsArray)
+			assert.False(t, genModel.IsAliased)
+			assert.Equal(t, "Stats", genModel.Name)
+			assert.Equal(t, "[]*StatsItems0", genModel.GoType)
+			// assert.Equal(t, "Stats", genModel.AliasedType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("stats.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type Stats []StatsItems0", res)
+					assertInCode(t, "func (m Stats) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m *Stats) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m *Stats) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *Stats) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "statsValue, err := iReadFn(in)", res)
+					assertInCode(t, "iReadFn := func(in *jlexer.Lexer) (*StatsItems0, error)", res)
+					assertInCode(t, "err := swag.ReadJSON(data, &statsValue)", res)
+					assertInCode(t, "var result []*StatsItems0", res)
+					assertInCode(t, "result = make([]*StatsItems0, 0, 64)", res)
+
+					assertInCode(t, "type StatsItems0 struct", res)
+					assertInCode(t, "func (m StatsItems0) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m *StatsItems0) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m *StatsItems0) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *StatsItems0) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "Points []int64 `json:\"points,omitempty\"`", res)
+					assertInCode(t, "isPointsFieldNil bool `json:\"-\"`", res)
+					assertInCode(t, "isPointsFieldSet bool `json:\"-\"`", res)
+					assertInCode(t, "func (m *StatsItems0) pointsIWriteJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *StatsItems0) pointsIReadJSON(in *jlexer.Lexer) ([]int64, error)", res)
+					assertInCode(t, "out.Int64(m.Points[i])", res)
+					assertInCode(t, "wv, err := iReadFn(in)", res)
+					assertInCode(t, "pointsValue, err := m.pointsIReadJSON(in)", res)
+					assertInCode(t, "err := m.pointsIWriteJSON(out)", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_Statix(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["Statix"]
+		genModel, err := makeGenDefinition("Statix", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsArray)
+			assert.True(t, genModel.IsAliased)
+			assert.Equal(t, "Statix", genModel.Name)
+			assert.Equal(t, "Statix", genModel.GoType)
+			assert.Equal(t, "[][][]*StatixItems0", genModel.AliasedType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("Statix.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type Statix [][][]*StatixItems0", res)
+					assertInCode(t, "func (m Statix) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m *Statix) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m *Statix) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *Statix) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "statixValue, err := iReadFn(in)", res)
+					assertInCode(t, "iReadFn := func(in *jlexer.Lexer) (*StatixItems0, error)", res)
+					assertInCode(t, "err := swag.ReadJSON(data, &statixValue)", res)
+					assertInCode(t, "var result []*StatixItems0", res)
+					assertInCode(t, "result = make([]*StatixItems0, 0, 64)", res)
+
+					assertInCode(t, "type StatixItems0 struct", res)
+					assertInCode(t, "func (m StatixItems0) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m *StatixItems0) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m *StatixItems0) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *StatixItems0) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "Points []int64 `json:\"points,omitempty\"`", res)
+					assertInCode(t, "isPointsFieldNil bool `json:\"-\"`", res)
+					assertInCode(t, "isPointsFieldSet bool `json:\"-\"`", res)
+					assertInCode(t, "func (m *StatixItems0) pointsIWriteJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *StatixItems0) pointsIReadJSON(in *jlexer.Lexer) ([]int64, error)", res)
+					assertInCode(t, "out.Int64(m.Points[i])", res)
+					assertInCode(t, "wv, err := iReadFn(in)", res)
+					assertInCode(t, "pointsValue, err := m.pointsIReadJSON(in)", res)
+					assertInCode(t, "err := m.pointsIWriteJSON(out)", res)
 				} else {
 					fmt.Println(buf.String())
 				}

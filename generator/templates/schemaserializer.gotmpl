@@ -1,4 +1,4 @@
-{{ define "modelSerializer" }}
+{{ define "modelSerializer" }}{{ if not .IsStream }}
 // MarshalJSON marshals this object with additional properties into a JSON object
 func ({{.ReceiverName}} {{ pascalize .Name }}) MarshalJSON() ([]byte, error) {
 	out := jwriter.Writer{}
@@ -46,7 +46,7 @@ func ({{ $.ReceiverName}} *{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascal
    {{ template "schemaValueDeserializerBody" . }}
 }
 {{ end }}
-{{ end }}
+{{ end }}{{ end }}
 {{ define "schemaValueSerializer" }}{{ template "schemaValueSerializerBody" . }}{{ end }}
 {{ define "schemaValueSerializerBody" -}}
 {{ if or .IsComplexObject .IsTuple .IsAdditionalProperties .IsAliased .IsCustomFormatter -}}
