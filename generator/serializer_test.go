@@ -976,3 +976,38 @@ func TestSerializer_Statix(t *testing.T) {
 		}
 	}
 }
+func TestSerializer_WithItems(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["WithItems"]
+		genModel, err := makeGenDefinition("WithItems", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.True(t, genModel.IsComplexObject)
+			assert.False(t, genModel.IsAliased)
+			assert.Equal(t, "WithItems", genModel.Name)
+			assert.Equal(t, "WithItems", genModel.GoType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("with_items.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type WithItems struct", res)
+					assertNotInCode(t, "func (m WithItems) MarshalJSON() ([]byte, error)", res)
+					assertNotInCode(t, "func (m *WithItems) UnmarshalJSON(data []byte) error", res)
+					assertNotInCode(t, "func (m *WithItems) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertNotInCode(t, "func (m *WithItems) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertNotInCode(t, "func (m *WithItems) Validate(formats strfmt.Registry)", res)
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
