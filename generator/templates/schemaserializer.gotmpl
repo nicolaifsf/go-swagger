@@ -7,34 +7,26 @@ func ({{.ReceiverName}} {{ pascalize .Name }}) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON unmarshals this object with additional properties from JSON
-func ({{.ReceiverName}} *{{ pascalize .Name }}) UnmarshalJSON(data []byte) error {
+func ({{.ReceiverName}} {{ if not .IsMap }}*{{ end }}{{ pascalize .Name }}) UnmarshalJSON(data []byte) error {
   in := jlexer.Lexer{Data: data}
 	{{ .ReceiverName }}.UnmarshalEasyJSON(&in)
 	return in.Error()
 }
 
 // MarshalEasyJSON marshals this object with additional properties into a JSON object
-func ({{.ReceiverName}} *{{ pascalize .Name }}) MarshalEasyJSON(out *jwriter.Writer) {
+func ({{.ReceiverName}} {{ if not .IsMap }}*{{ end }}{{ pascalize .Name }}) MarshalEasyJSON(out *jwriter.Writer) {
   {{ template "schemaSerializer" . }}
 }
 
 // UnmarshalEasyJSON unmarshals this object with additional properties from JSON
-func ({{.ReceiverName}} *{{ pascalize .Name }}) UnmarshalEasyJSON(in *jlexer.Lexer) {
+func ({{.ReceiverName}} {{ if not .IsMap }}*{{ end }}{{ pascalize .Name }}) UnmarshalEasyJSON(in *jlexer.Lexer) {
   {{ template "schemaDeserializer" . }}
 }
 {{ range .Properties }}
-func ({{ $.ReceiverName}} *{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascalize .IndexVar }}WriteJSON(out *jwriter.Writer) error {
+func ({{ $.ReceiverName}} {{ if not .IsMap }}*{{ end }}{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascalize .IndexVar }}WriteJSON(out *jwriter.Writer) error {
    {{ template "schemaValueSerializerBody" . }}
 }
-func ({{ $.ReceiverName}} *{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascalize .IndexVar }}ReadJSON(in *jlexer.Lexer) ({{ template "schemaType" . }}, error) {
-   {{ template "schemaValueDeserializerBody" . }}
-}
-{{ end }}
-{{ if .AdditionalProperties }}
-func ({{ $.ReceiverName}} *{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascalize .IndexVar }}WriteJSON(out *jwriter.Writer) error {
-   {{ template "schemaValueSerializerBody" . }}
-}
-func ({{ $.ReceiverName}} *{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascalize .IndexVar }}ReadJSON(in *jlexer.Lexer) ({{ template "schemaType" . }}, error) {
+func ({{ $.ReceiverName}} {{ if not .IsMap }}*{{ end }}{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascalize .IndexVar }}ReadJSON(in *jlexer.Lexer) ({{ template "schemaType" . }}, error) {
    {{ template "schemaValueDeserializerBody" . }}
 }
 {{ end }}
@@ -49,7 +41,7 @@ func ({{ $.ReceiverName}} *{{ pascalize $.Name }}) {{ camelize .Name }}{{ pascal
 {{ end }}{{ end }}
 {{ define "schemaValueSerializer" }}{{ template "schemaValueSerializerBody" . }}{{ end }}
 {{ define "schemaValueSerializerBody" -}}
-{{ if or .IsComplexObject .IsTuple .IsAdditionalProperties .IsAliased .IsCustomFormatter -}}
+{{ if or .IsComplexObject .IsTuple .IsAdditionalProperties .IsAliased .IsCustomFormatter .IsMap -}}
 out.Raw(swag.WriteJSON({{ .ValueExpression }}))
 return nil
 {{- else if .IsArray -}}
@@ -111,13 +103,28 @@ in.Delim(']')
 	}
   return {{ if .IsNullable }}&{{ end }}{{ .JSONIn }}, nil{{ end }}{{ end }}
 {{ define "schemaSerializer" }}
-{{ if or .IsComplexObject .IsTuple .IsAdditionalProperties }}{{ template "schemaObjectSerializer" . }}
-{{ else if .IsArray }}{{ template "schemaSliceSerializer" . }}
-{{ else if .IsCustomFormatter }}{{ else }}{{ .JSONOut }}{{ if .IsAliased }}({{ .ReceiverName }}){{ end }}
+{{ if or .IsComplexObject .IsTuple .IsAdditionalProperties }}/* schema object */
+{{ template "schemaObjectSerializer" . }}
+{{ else if .IsMap }}out.Raw(swag.WriteJSON({{ .AliasedType }}({{ .ValueExpression }})))
+return nil
+{{ else if .IsArray }}/* slice schema */
+{{ template "schemaSliceSerializer" . }}
+{{ else if .IsCustomFormatter }}/* custom formatter */
+{{ else }}/* fallback {{ printf "%#v" . }} */
+{{ .JSONOut }}{{ if .IsAliased }}({{ .ReceiverName }}){{ end }}
 return nil
 {{ end }}{{ end }}
 {{ define "schemaDeserializer" }}
 {{ if or .IsComplexObject .IsTuple .IsAdditionalProperties }}{{ template "schemaObjectDeserializer" . }}
+{{ else if .IsMap }}
+var {{ camelize .Name }}Value {{ .AliasedType }}
+if data := in.Raw(); in.Ok() {
+  if err := swag.ReadJSON(data, &{{ camelize .Name }}Value); err != nil {
+    out.Error = err
+    return
+  }
+}
+*m = {{ camelize .Name }}Value
 {{ else if .IsArray }}{{ template "schemaSliceDeserializer" . }}
 {{ else if .IsCustomFormatter }}{{ else }}{{ if .IsAliased }}*{{ .ReceiverName }} = {{ end }}{{ .JSONIn }}
 return nil
@@ -258,7 +265,15 @@ if {{ $.ReceiverName }}.Has{{ pascalize $prop.Name }}Value() {
   }{{ end }}
 }
 {{ end }}
+{{ if .IsAdditionalProperties }}
+// this is a map
+{{ end }}
 {{ if .AdditionalProperties }}
+// this is a weird map
+{{ end }}
+
+{{ if .HasAdditionalProperties }}
+// this has a map
 if {{ .ReceiverName }}.Has{{ pascalize .AdditionalProperties.Name }}Value() {
   if !first {
     out.RawByte(',')

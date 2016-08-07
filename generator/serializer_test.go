@@ -976,6 +976,7 @@ func TestSerializer_Statix(t *testing.T) {
 		}
 	}
 }
+
 func TestSerializer_WithItems(t *testing.T) {
 	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
 	if assert.NoError(t, err) {
@@ -997,11 +998,99 @@ func TestSerializer_WithItems(t *testing.T) {
 					res := string(ct)
 					// fmt.Println(res)
 					assertInCode(t, "type WithItems struct", res)
-					assertNotInCode(t, "func (m WithItems) MarshalJSON() ([]byte, error)", res)
-					assertNotInCode(t, "func (m *WithItems) UnmarshalJSON(data []byte) error", res)
-					assertNotInCode(t, "func (m *WithItems) MarshalEasyJSON(out *jwriter.Writer)", res)
-					assertNotInCode(t, "func (m *WithItems) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
-					assertNotInCode(t, "func (m *WithItems) Validate(formats strfmt.Registry)", res)
+					assertInCode(t, "func (m WithItems) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m *WithItems) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m *WithItems) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m *WithItems) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "func (m *WithItems) Validate(formats strfmt.Registry)", res)
+
+					assertInCode(t, "Tags []string `json:\"tags,omitempty\"`", res)
+					assertInCode(t, "out.RawString(\"\\\"tags\\\":\")", res)
+					assertInCode(t, "func (m *WithItems) tagsIWriteJSON(out *jwriter.Writer) error", res)
+					assertInCode(t, "out.String(m.Tags[i])", res)
+					assertInCode(t, "if err := m.tagsIWriteJSON(out); err != nil", res)
+					assertInCode(t, "m.Tags = nil", res)
+					assertInCode(t, "func (m *WithItems) tagsIReadJSON(in *jlexer.Lexer) ([]string, error) {", res)
+					assertInCode(t, "return in.String(), nil", res)
+					assertInCode(t, "if tagsValue, err := m.tagsIReadJSON(in); err != nil", res)
+					assertInCode(t, "m.Tags = tagsValue", res)
+
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_Nota(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["Nota"]
+		genModel, err := makeGenDefinition("Nota", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.False(t, genModel.IsComplexObject)
+			assert.True(t, genModel.IsAliased)
+			assert.True(t, genModel.IsMap)
+			assert.Equal(t, "Nota", genModel.Name)
+			assert.Equal(t, "Nota", genModel.GoType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("nota.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type Nota map[string]int32", res)
+					assertInCode(t, "func (m Nota) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m Nota) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m Nota) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m Nota) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "func (m Nota) Validate(formats strfmt.Registry)", res)
+
+				} else {
+					fmt.Println(buf.String())
+				}
+			} else {
+				fmt.Println(buf.String())
+			}
+		}
+	}
+}
+
+func TestSerializer_NotaWithRef(t *testing.T) {
+	specDoc, err := loads.Spec("../fixtures/codegen/todolist.models.yml")
+	if assert.NoError(t, err) {
+		definitions := specDoc.Spec().Definitions
+		schema := definitions["NotaWithRef"]
+		genModel, err := makeGenDefinition("NotaWithRef", "models", schema, specDoc, true, true)
+		if assert.NoError(t, err) {
+			assert.False(t, genModel.IsComplexObject)
+			assert.True(t, genModel.IsAliased)
+			assert.True(t, genModel.IsMap)
+			assert.Equal(t, "NotaWithRef", genModel.Name)
+			assert.Equal(t, "NotaWithRef", genModel.GoType)
+			// pretty.Println(genModel)
+			buf := bytes.NewBuffer(nil)
+			err := modelTemplate.Execute(buf, genModel)
+			if assert.NoError(t, err) {
+				ct, err := formatGoFile("nota_with_ref.go", buf.Bytes())
+				// fmt.Println(buf.String())
+				if assert.NoError(t, err) {
+					res := string(ct)
+					// fmt.Println(res)
+					assertInCode(t, "type NotaWithRef map[string]Notable", res)
+					assertInCode(t, "func (m NotaWithRef) MarshalJSON() ([]byte, error)", res)
+					assertInCode(t, "func (m NotaWithRef) UnmarshalJSON(data []byte) error", res)
+					assertInCode(t, "func (m NotaWithRef) MarshalEasyJSON(out *jwriter.Writer)", res)
+					assertInCode(t, "func (m NotaWithRef) UnmarshalEasyJSON(in *jlexer.Lexer)", res)
+					assertInCode(t, "func (m NotaWithRef) Validate(formats strfmt.Registry)", res)
+
 				} else {
 					fmt.Println(buf.String())
 				}
