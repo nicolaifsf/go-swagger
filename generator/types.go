@@ -182,10 +182,17 @@ func (t *typeResolver) resolveSchemaRef(schema *spec.Schema, isRequired bool) (r
 }
 
 func (t *typeResolver) inferAliasing(result *resolvedType, schema *spec.Schema, isAnonymous bool, isRequired bool) {
+	if Debug {
+		pc, file, pos, _ := runtime.Caller(1)
+		log.Printf("%s@%s:%d: inferring aliasing for %s (named: %s, anon: %t)", runtime.FuncForPC(pc).Name(), filepath.Base(file), pos, result.GoType, t.ModelName, isAnonymous)
+	}
 	if !isAnonymous && t.ModelName != "" {
 		result.AliasedType = result.GoType
 		result.IsAliased = true
 		result.GoType = t.goTypeName(t.ModelName)
+	}
+	if Debug {
+		log.Printf("inferred aliasing (aliased: %t, aliased: %s, type: %s)", result.IsAliased, result.AliasedType, result.GoType)
 	}
 }
 

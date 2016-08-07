@@ -10,8 +10,6 @@ import (
 	"text/template"
 	"text/template/parse"
 
-	"log"
-
 	"bitbucket.org/pkg/inflect"
 	"github.com/go-openapi/swag"
 )

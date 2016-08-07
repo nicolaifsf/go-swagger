@@ -80,9 +80,7 @@ return nil{{ end }}{{ end }}
 {{ define "schemaValueDeserializerBody" }}{{ if or .IsComplexObject .IsTuple .IsAdditionalProperties .IsAliased .IsCustomFormatter }}var {{ camelize .Name }}Value {{ template "dereffedSchemaType" . }}
 if data := in.Raw(); in.Ok() {
   if err := swag.ReadJSON(data, &{{ camelize .Name }}Value); err != nil {
-    if err != nil {
-      return {{ .Zero }}, err
-    }
+    return {{ if .IsNullable }}nil{{ else }}{{ .Zero }}{{ end }}, err
   }
 }
 return {{ if .IsNullable }}&{{ end }}{{ camelize .Name }}Value, nil
@@ -90,10 +88,10 @@ return {{ if .IsNullable }}&{{ end }}{{ camelize .Name }}Value, nil
 {{ .IndexVar }}ReadFn := func(in *jlexer.Lexer) ({{ template "schemaType" .Items }}, error) {
   {{ if .AdditionalItems }}{{ template "schemaValueDeserializer" .AdditionalItems }}{{ else }}{{ template "schemaValueDeserializer" .Items }}{{ end }}
 }
-var result []{{ if .AdditionalItems }}{{ template "schemaType" .AdditionalItems }}{{ else }}{{ template "schemaType" .Items }}{{ end }}
+var result {{ if .AdditionalItems }}[]{{ template "schemaType" .AdditionalItems }}{{ else }}{{ template "schemaType" . }}{{ end }}
 in.Delim('[')
 if !in.IsDelim(']') {
-  result = make([]{{ if .AdditionalItems }}{{ template "schemaType" .AdditionalItems }}{{ else }}{{ template "schemaType" .Items }}{{ end }}, 0, 64)
+  result = make({{ if .AdditionalItems }}[]{{ template "schemaType" .AdditionalItems }}{{ else }}{{ template "schemaType" . }}{{ end }}, 0, 64)
 } else {
   result = nil
 }

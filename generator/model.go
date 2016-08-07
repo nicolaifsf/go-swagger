@@ -960,6 +960,7 @@ func (sg *schemaGenContext) buildArray() error {
 	sg.GenSchema.ItemsEnum = elProp.GenSchema.Enum
 	elProp.GenSchema.Suffix = "Items"
 	if sg.Named {
+		sg.GenSchema.IsAliased = true
 		sg.GenSchema.AliasedType = "[]" + elProp.GenSchema.GoType
 	} else {
 		sg.GenSchema.GoType = "[]" + elProp.GenSchema.GoType
@@ -970,7 +971,13 @@ func (sg *schemaGenContext) buildArray() error {
 
 	elProp.GenSchema.IsNullable = tpe.IsNullable && !tpe.HasDiscriminator
 	if nn && !tpe.HasDiscriminator && !tpe.IsPrimitive {
-		sg.GenSchema.GoType = "[]*" + elProp.GenSchema.GoType
+		if sg.Named {
+			sg.GenSchema.IsAliased = true
+			sg.GenSchema.AliasedType = "[]*" + elProp.GenSchema.GoType
+			sg.GenSchema.Name = sg.TypeResolver.goTypeName(sg.GenSchema.Name)
+		} else {
+			sg.GenSchema.GoType = "[]*" + elProp.GenSchema.GoType
+		}
 	}
 
 	schemaCopy := elProp.GenSchema
